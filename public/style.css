@@ -1,0 +1,81 @@
+body {
+    color: #999;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+#keys {
+    margin-top: 300px;
+    text-align: center;
+}
+
+#left, 
+#right, 
+#takeoff-land {
+    display: inline-block;
+}
+
+#left, 
+#right {
+    margin-right: 24px;
+}
+
+.key {
+    width: 54px; 
+    height: 54px;
+    display: inline-block;
+    position: relative;
+    background: #ddeedd;
+
+    color: #333;
+    line-height: 54px;
+}
+
+.key:hover, 
+.key.active {
+    color: #fff;
+    background: #ccc; 
+}
+
+.key .label, 
+.key .action {
+    display: block;
+    position: absolute; 
+    top: 5px; 
+    left: 5px; 
+    bottom: 5px; 
+    right: 5px;
+}
+
+.key .label {
+    line-height: 10px;
+    font-size: 10px; 
+    text-align: left;
+}
+ 
+.key .action {
+    line-height: 40px;
+    font-size: 28px; 
+    text-align: center;
+}
+
+.key .label {
+     display: none;
+}
+.key .action {
+    color: blue;
+
+}
+.key:hover .label, 
+.key.active .label { 
+    color: #efefef;
+    display: block;
+}
+
+.key:hover .action, 
+.key.active .action { 
+    display: block; 
+}
+
+#right .key .action {
+    line-height: 32px;
+}

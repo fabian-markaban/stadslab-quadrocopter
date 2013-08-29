@@ -1,0 +1,13 @@
+{
+    "name": "stadslab-quadrocopter",
+    "version": "0.0.1",
+    "description": "",
+    "author": "Fabian Markaban <0797452@hr.nl>",
+    "dependencies": {
+        "ardrone": ">=0.1.0",
+        "connect": ">=1.1.1",
+        "socket.io": ">=0.6.16"
+    },
+    "scripts": { "start": "node server.js" },
+    "bin": { "stadslab-quadrocopter": "./server.js" }
+}

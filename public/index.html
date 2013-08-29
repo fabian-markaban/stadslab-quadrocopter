@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>AR.Drone Controls</title>
+    <link rel="stylesheet" href="/style.css">
+</head>    
+<body>
+    <div id="keys">
+        <h1>AR.Drone Controls</h1>
+        <div id="left">
+            <div class="key" id="key_a" title="turn left">
+                <span class="label">a</span>
+                <span class="action">&#x21ba;</span>
+            </div>
+            <div class="key" id="key_s" title="up">
+                <span class="label">s</span>
+                <span class="action">&uArr;</span>
+            </div>
+            <div class="key" id="key_d" title="down">
+                <span class="label">d</span>
+                <span class="action">&dArr;</span>
+            </div>
+            <div class="key" id="key_f" title="turn right">
+                <span class="label">f</span>
+                <span class="action">&#x21bb;</span>
+            </div>
+        </div>
+        <div id="right">
+            <div class="key" id="key_h" title="left">
+                <span class="label">h</span>
+                <span class="action">&larr;</span>
+            </div>
+            <div class="key" id="key_j" title="backward">
+                <span class="label">j</span>
+                <span class="action">&darr;</span>
+            </div>
+            <div class="key" id="key_k" title="forward">
+                <span class="label">k</span><span class="action">&uarr;</span>
+            </div>
+            <div class="key" id="key_l" title="right">
+                <span class="label">l</span><span class="action">&rarr;</span>
+            </div>
+        </div>
+        <div id="takeoff-land">
+            <div class="key" id="key_enter" title="takeoff">
+                <span class="label">Enter</span>
+                <span class="action">&#x21a5;</span>
+            </div>
+            <div class="key" id="key_esc" title="land">
+                <span class="label">Esc</span>
+                <span class="action">&#x21a7;</span>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+
+        /**
+         * get key from event, translate keycode from table to actual key name
+         * @param event
+         * @return key from table
+         */
+        function getKey(event) 
+        {
+            var key = getKey.table[event.keyCode];
+            if (! key) {
+                key = String.fromCharCode(event.keyCode).toLowerCase();
+            }
+
+            return key;
+        }
+
+        // mapping table
+        getKey.table = {
+            8:  'backspace',
+            9:  'tab',
+            13: 'enter',
+            16: 'shift',
+            32: 'space',
+            37: 'left',
+            38: 'up',
+            39: 'right',
+            40: 'down',
+            46: 'delete'
+        };
+
+        // open socket io connection to localhost
+        var socket = new io.Socket('localhost');
+        socket.connect();
+
+        var currKeys = {};
+
+        /**
+         * update directions from current pressed key(s)
+         * @return void
+         */
+        function update() 
+        {
+            var properties = {
+                yaw:   !!currKeys['f'] - !!currKeys['a'],
+                roll:  !!currKeys['j'] - !!currKeys['k'],
+                pitch: (!!currKeys['H'] || !!currKeys['l']) - (!!currKeys['h'] || !!currKeys['L']),
+                gaz:   !!currKeys['s'] - !!currKeys['d']
+            };
+
+            // send properties to socket
+            socket.send(JSON.stringify(properties));
+        }
+
+        /**
+         * Listen for keydown actions
+         */
+        document.addEventListener('keydown', function(event) 
+        {
+            var key = getKey(event);
+            
+            // add active class to HTML element on keydown event
+            var element = document.getElementById('key_' + key);
+            if (element && ! element.className.match(/(^|\s)active(\s|$)/)) {
+                element.className += ' active';
+            }
+            
+            if (key == 'enter' || key == 'up') {
+                socket.send('takeoff');
+            } else if (key == 'esc' || key == 'down') {
+                socket.send('land');
+            } else {
+                currKeys[key] = 1;
+                update();
+            }
+        }, false);
+
+        /**
+         * Listen for keyup actions
+         */
+        document.addEventListener('keyup', function(event) 
+        {
+            var key = getKey(event);
+            
+            // remove active class from active HTML element
+            var element = document.getElementById('key_' + key);
+            if (element) {
+                element.className = element.className.replace(/(^|\s)active(\s|$)/g, ' ');
+            }
+            
+            currKeys[key] = 0;
+            update();
+        }, false);
+
+    </script>
+</body>
+</html>
